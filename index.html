@@ -34,6 +34,10 @@ button { width:100%; padding:14px; background:#2ecc71; color:white; border:none;
 </div>
 
 <script>
+function limpiar(txt){
+  return txt.toLowerCase().replace(/\s+/g," ").trim();
+}
+
 async function buscar(){
 
 const apellidos=document.getElementById("apellidos").value.trim().toLowerCase();
@@ -87,8 +91,10 @@ let extraNota="";
 if(!isNaN(nota) && nota < 40){
  extra="<span class='verde'>✔ En bolsa adicional</span>";
 
- if(adicional[r.nombre]){
-   extraNota = `<span class="azul">Nota adicional: ${adicional[r.nombre]}</span>`;
+ const clave = limpiar(r.nombre);
+
+ if(adicional[clave]){
+   extraNota = `<span class="azul">Nota adicional: ${adicional[clave]}</span>`;
  } else {
    extraNota = `<span class="rojo">Nota adicional: No encontrada</span>`;
  }
@@ -117,6 +123,7 @@ async function scrap(url,tipo){
   doc.querySelectorAll("table tr").forEach(row=>{
     const c=row.querySelectorAll("td");
 
+    // BOLSA NORMAL
     if(tipo==="bolsa" && c.length>6){
       const dni=c[0].innerText.trim();
       const nombreC=c[1].innerText.trim();
@@ -127,10 +134,12 @@ async function scrap(url,tipo){
       }
     }
 
+    // 🔥 BOLSA ADICIONAL CORRECTA
     if(tipo==="extra" && c.length>4){
       const nombreC=c[1].innerText.trim();
       const nota=c[4].innerText.trim();
-      adicional[nombreC]=nota;
+
+      adicional[limpiar(nombreC)] = nota;
     }
 
   });
@@ -141,17 +150,29 @@ async function scrap(url,tipo){
  actualizarProgreso();
 }
 
-// 🔥 LANZAR TODO
+// 🔥 PROMESAS
 let promesas=[];
 
-// bolsa
+// bolsa normal
 for(let i=1;i<=52;i++){
- promesas.push(scrap(`https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?c_area_esp=000&id_catesp=1004&estado=listado&provisional=0&situacion=A&orden=ORDNOTA&t=L&convocatoria=2023&pageno=${i}`,"bolsa"));
+ promesas.push(scrap(
+`https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?c_area_esp=000&id_catesp=1004&estado=listado&provisional=0&situacion=A&orden=ORDNOTA&t=L&convocatoria=2023&pageno=${i}`,
+"bolsa"
+));
 }
 
-// adicional
-for(let i=1;i<=91;i++){
- promesas.push(scrap(`https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?c_area_esp=000&id_catesp=1004&estado=listado&provisional=0&situacion=X&orden=ORDNOM&t=L&convocatoria=2023&pageno=${i}`,"extra"));
+// 🔥 BOLSA ADICIONAL (PÁGINA 1 DISTINTA)
+promesas.push(scrap(
+"https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?id_catesp=1004&c_area_esp=000&situacion=X&provisional=0&t=L&convocatoria=2023",
+"extra"
+));
+
+// resto páginas 2–91
+for(let i=2;i<=91;i++){
+ promesas.push(scrap(
+`https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?c_area_esp=000&id_catesp=1004&estado=listado&provisional=0&situacion=X&pageno=${i}&orden=ORDNOTA&t=L&convocatoria=2023`,
+"extra"
+));
 }
 
 // esperar todo

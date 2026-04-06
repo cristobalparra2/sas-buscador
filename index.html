@@ -27,19 +27,16 @@ button { width:100%; padding:14px; background:#2ecc71; color:white; border:none;
 <input id="nombre" placeholder="Nombre (opcional)">
 <input id="dni" placeholder="DNI (opcional)">
 <button onclick="buscar()">Buscar</button>
-<button onclick="verFavoritos()">⭐ Favoritos</button>
 
 <div id="results"></div>
 </div>
 
 <script>
-let favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
-
 async function buscar(){
 
-const apellidos=document.getElementById("apellidos").value.toLowerCase();
-const nombre=document.getElementById("nombre").value.toLowerCase();
-const dniBuscar=document.getElementById("dni").value.toLowerCase();
+const apellidos=document.getElementById("apellidos").value.trim().toLowerCase();
+const nombre=document.getElementById("nombre").value.trim().toLowerCase();
+const dniBuscar=document.getElementById("dni").value.trim().toLowerCase();
 const resultsDiv=document.getElementById("results");
 
 if(!apellidos && !dniBuscar){
@@ -69,7 +66,7 @@ let clase = nota>=40 ? "verde":"rojo";
 let extra="";
 let extraNota="";
 
-if(nota<40){
+if(!isNaN(nota) && nota < 40){
  extra="<span class='verde'>✔ En bolsa adicional</span>";
  extraNota= adicional[r.nombre]
    ? `<span class="azul">Nota adicional: ${adicional[r.nombre]}</span>`
@@ -81,36 +78,22 @@ return `<div class="card">
 DNI: ${r.dni}<br>
 <span class="${clase}">Bolsa: ${r.nota}</span><br>
 ${extra}<br>
-${extraNota}<br>
-<button onclick="guardar('${r.nombre}','${r.dni}')">⭐ Guardar</button>
+${extraNota}
 </div>`;
 }).join("");
 }
 
-function guardar(nombre,dni){
- favoritos.push({nombre,dni});
- localStorage.setItem("favoritos",JSON.stringify(favoritos));
- alert("Guardado");
-}
-
-window.verFavoritos=function(){
- resultsDiv.innerHTML = favoritos.map(f=>`
-  <div class="card">
-    ${f.nombre}<br>${f.dni}
-  </div>
- `).join("");
-}
-
 async function scrap(url,tipo){
  try{
-  const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  const res=await fetch(proxy);
-  const data=await res.json();
-  const doc=new DOMParser().parseFromString(data.contents,"text/html");
+  const proxy = "https://corsproxy.io/?";
+  const res = await fetch(proxy + encodeURIComponent(url));
+  const html = await res.text();
+  const doc = new DOMParser().parseFromString(html, "text/html");
 
   doc.querySelectorAll("table tr").forEach(row=>{
     const c=row.querySelectorAll("td");
 
+    // BOLSA NORMAL
     if(tipo==="bolsa" && c.length>6){
       const dni=c[0].innerText.trim();
       const nombreC=c[1].innerText.trim();
@@ -121,6 +104,7 @@ async function scrap(url,tipo){
       }
     }
 
+    // BOLSA ADICIONAL (columna 5 TOTAL PUNTUACIÓN)
     if(tipo==="extra" && c.length>4){
       const nombreC=c[1].innerText.trim();
       const nota=c[4].innerText.trim();
@@ -131,15 +115,22 @@ async function scrap(url,tipo){
 
   pintar();
 
- }catch(e){}
+ }catch(e){
+   console.log("Error:", e);
+ }
 }
 
-// rápido primero
+// ⚡ PRIMERO pocas páginas (rápido)
 for(let i=1;i<=10;i++){
  await scrap(`https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?c_area_esp=000&id_catesp=1004&estado=listado&provisional=0&situacion=A&orden=ORDNOTA&t=L&convocatoria=2023&pageno=${i}`,"bolsa");
 }
 
-// adicional
+// 🔥 RESTO SIN ESPERAR (más rápido)
+for(let i=11;i<=52;i++){
+ scrap(`https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?c_area_esp=000&id_catesp=1004&estado=listado&provisional=0&situacion=A&orden=ORDNOTA&t=L&convocatoria=2023&pageno=${i}`,"bolsa");
+}
+
+// 🔥 BOLSA ADICIONAL (91 páginas)
 for(let i=1;i<=91;i++){
  scrap(`https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?c_area_esp=000&id_catesp=1004&estado=listado&provisional=0&situacion=X&orden=ORDNOM&t=L&convocatoria=2023&pageno=${i}`,"extra");
 }

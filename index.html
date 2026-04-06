@@ -8,6 +8,7 @@
 <style>
 body { font-family: Arial; margin:0; background:#f0f2f5; }
 .header { background:#2ecc71; color:white; padding:15px; text-align:center; font-size:20px; }
+small { font-size:14px; opacity:0.9; }
 .container { padding:15px; }
 input { width:100%; padding:12px; margin:5px 0; border-radius:10px; border:1px solid #ccc; }
 button { width:100%; padding:14px; background:#2ecc71; color:white; border:none; border-radius:10px; font-size:16px; margin-top:5px; }
@@ -21,7 +22,10 @@ button { width:100%; padding:14px; background:#2ecc71; color:white; border:none;
 
 <body>
 
-<div class="header">SAS BUSCADOR</div>
+<div class="header">
+SAS BUSCADOR<br>
+<small>Celador Conductor</small>
+</div>
 
 <div class="container">
 <input id="apellidos" placeholder="Apellidos (obligatorio)">
@@ -42,8 +46,8 @@ const dniBuscar=document.getElementById("dni").value.trim().toLowerCase();
 const resultsDiv=document.getElementById("results");
 const progressDiv=document.getElementById("progress");
 
-if(!apellidos && !dniBuscar){
-  resultsDiv.innerHTML="<span class='rojo'>Introduce apellidos o DNI</span>";
+if(!apellidos){
+  resultsDiv.innerHTML="<span class='rojo'>Introduce apellidos obligatoriamente</span>";
   return;
 }
 
@@ -63,9 +67,11 @@ function actualizarProgreso(){
 
 function coincide(nombreC,dni){
  const txt=nombreC.toLowerCase();
- if(dniBuscar && !dni.toLowerCase().includes(dniBuscar)) return false;
- if(apellidos && !txt.includes(apellidos)) return false;
+
+ if(!txt.includes(apellidos)) return false;
  if(nombre && !txt.includes(nombre)) return false;
+ if(dniBuscar && !dni.toLowerCase().includes(dniBuscar)) return false;
+
  return true;
 }
 
@@ -87,7 +93,7 @@ let extraNota="";
 if(!isNaN(nota) && nota < 40){
  extra="<span class='verde'>✔ En bolsa adicional</span>";
 
- if(adicional[r.dni]){
+ if(adicional[r.dni] !== undefined){
    extraNota = `<span class="azul">Nota adicional: ${adicional[r.dni]}</span>`;
  } else {
    extraNota = `<span class="rojo">Nota adicional: No encontrada</span>`;
@@ -97,6 +103,7 @@ if(!isNaN(nota) && nota < 40){
 return `<div class="card">
 <b>${r.nombre}</b><br>
 DNI: ${r.dni}<br>
+<span class="azul">Categoría: Celador Conductor</span><br>
 <span class="${clase}">Bolsa: ${r.nota}</span><br>
 ${extra}<br>
 ${extraNota}
@@ -117,6 +124,7 @@ async function scrap(url,tipo){
   doc.querySelectorAll("table tr").forEach(row=>{
     const c=row.querySelectorAll("td");
 
+    // BOLSA NORMAL
     if(tipo==="bolsa" && c.length>6){
       const dni=c[0].innerText.trim();
       const nombreC=c[1].innerText.trim();
@@ -127,10 +135,13 @@ async function scrap(url,tipo){
       }
     }
 
-    // 🔥 CLAVE: GUARDAR POR DNI
-    if(tipo==="extra" && c.length>4){
-      const dni=c[0].innerText.trim();
-      const nota=c[4].innerText.trim();
+    // BOLSA ADICIONAL (COLUMNA 5 CORRECTA)
+    if(tipo==="extra" && c.length >= 5){
+
+      const dni = c[0].innerText.trim();
+      let nota = c[4].innerText.trim().replace(",", ".");
+
+      if(!dni || !nota || isNaN(parseFloat(nota))) return;
 
       adicional[dni] = nota;
     }
@@ -153,7 +164,7 @@ for(let i=1;i<=52;i++){
 ));
 }
 
-// adicional página 1
+// bolsa adicional página 1
 promesas.push(scrap(
 "https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?id_catesp=1004&c_area_esp=000&situacion=X&provisional=0&t=L&convocatoria=2023",
 "extra"

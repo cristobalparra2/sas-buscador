@@ -3,110 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador Global SAS 2023/24</title>
+    <title>Buscador Universal SAS - Detector de Categorías</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --sas-primary: #007d43; --sas-secondary: #004d2a; --bg: #f0f4f8; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .main-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid var(--sas-primary); padding-bottom: 15px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-        select, input { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
-        button { width: 100%; padding: 16px; background: var(--sas-primary); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        button:hover { background: var(--sas-secondary); transform: scale(1.01); }
+        :root { --primary: #00a859; --accent: #2980b9; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        .container { max-width: 850px; margin: 0 auto; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--primary); font-weight: 800; margin-bottom: 10px; }
+        p.desc { text-align: center; color: #64748b; margin-bottom: 30px; }
         
-        #progress { margin: 20px 0; display: none; text-align: center; }
-        .bar-bg { background: #e9ecef; border-radius: 10px; height: 12px; overflow: hidden; }
-        .bar-fill { background: var(--sas-primary); width: 0%; height: 100%; transition: width 0.3s; }
+        .search-area { background: #f1f5f9; padding: 25px; border-radius: 16px; margin-bottom: 30px; }
+        input { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 18px; box-sizing: border-box; transition: 0.3s; }
+        input:focus { outline: none; border-color: var(--primary); background: white; }
         
-        .result-card { border: 1px solid #dee2e6; padding: 20px; margin-top: 15px; border-radius: 15px; background: #fff; border-left: 10px solid #ddd; }
-        .result-card.principal { border-left-color: #28a745; }
-        .result-card.adicional { border-left-color: #17a2b8; }
-        .badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
-        .badge-p { background: #d4edda; color: #155724; }
-        .badge-a { background: #d1ecf1; color: #0c5460; }
-        .name { font-size: 18px; font-weight: bold; }
-        .nota-box { display: flex; align-items: baseline; gap: 10px; margin-top: 10px; }
-        .nota-num { font-size: 32px; font-weight: 800; color: #2c3e50; }
+        button { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: 0.2s; }
+        button:hover { background: #008f4c; transform: translateY(-2px); }
+
+        #status { margin: 20px 0; display: none; }
+        .progress-container { background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; }
+        #bar { height: 100%; width: 0%; background: var(--primary); transition: width 0.3s; }
+        #status-msg { text-align: center; font-size: 12px; color: #64748b; margin-top: 8px; font-weight: 600; }
+
+        .result-item { border: 1px solid #e2e8f0; padding: 20px; margin-top: 15px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .cat-info { flex: 1; }
+        .cat-name { font-weight: 800; font-size: 16px; color: var(--accent); text-transform: uppercase; }
+        .user-name { font-size: 18px; font-weight: 600; margin: 4px 0; }
+        .details { font-size: 13px; color: #64748b; }
+        
+        .score-box { text-align: center; padding-left: 20px; border-left: 2px solid #f1f5f9; }
+        .score-val { font-size: 32px; font-weight: 800; color: #1e293b; display: block; }
+        .score-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+
+        .tag { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 5px; }
+        .tag-l { background: #dcfce7; color: #166534; } /* Libre */
+        .tag-p { background: #fef9c3; color: #854d0e; } /* Promoción */
     </style>
 </head>
 <body>
 
-<div class="main-container">
-    <div class="header">
-        <h1>Buscador de Listados SAS</h1>
-        <small>Actualización según Cuadro de Evolución 2023</small>
+<div class="container">
+    <h1>Detector de Categorías SAS</h1>
+    <p class="desc">Introduce apellidos para localizar al aspirante en todos los listados vigentes.</p>
+
+    <div class="search-area">
+        <input type="text" id="apellidos" placeholder="Escriba los apellidos completos (Obligatorio)">
+        <button onclick="escanearTodo()">Buscar en todas las categorías</button>
     </div>
 
-    <div class="form-group">
-        <label>Categoría Profesional</label>
-        <select id="categoria">
-            <option value="1004">Celador Conductor</option>
-            <option value="1003">Celador</option>
-            <option value="1001">Enfermero/a</option>
-            <option value="1011">TCAE (Auxiliar de Enfermería)</option>
-            <option value="1013">Auxiliar Administrativo</option>
-            <option value="1005">Administrativo</option>
-            <option value="1002">Fisioterapeuta</option>
-            <option value="1021">Técnico Superior Laboratorio</option>
-            <option value="1022">Técnico Superior Radiodiagnóstico</option>
-            <option value="1044">Cocinero/a</option>
-            <option value="1055">Limpiador/a</option>
-            <option value="1040">Trabajador/a Social</option>
-            <option value="1020">Técnico Superior Anatomía Patológica</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Apellidos del Aspirante</label>
-        <input type="text" id="apellidos" placeholder="Escribe los apellidos a buscar...">
-    </div>
-
-    <button onclick="realizarBusqueda()">Escanear Registros Oficiales</button>
-
-    <div id="progress">
-        <div class="bar-bg"><div class="bar-fill" id="fill"></div></div>
-        <p id="p-text" style="font-size: 12px; margin-top: 8px; color: #666;">Preparando conexión...</p>
+    <div id="status">
+        <div class="progress-container"><div id="bar"></div></div>
+        <div id="status-msg">Iniciando escaneo global...</div>
     </div>
 
     <div id="results"></div>
 </div>
 
 <script>
-async function realizarBusqueda() {
-    const catId = document.getElementById('categoria').value;
-    const apellidos = document.getElementById('apellidos').value.trim().toLowerCase();
-    const resultsArea = document.getElementById('results');
-    const fill = document.getElementById('fill');
-    const prog = document.getElementById('progress');
+// Base de datos de categorías basada en el Cuadro de Evolución y IDs oficiales
+const categorias = [
+    {id: "1004", nombre: "Celador Conductor"},
+    {id: "1003", nombre: "Celador"},
+    {id: "1001", nombre: "Enfermero/a"},
+    {id: "1011", nombre: "TCAE (Aux. Enfermería)"},
+    {id: "1013", nombre: "Auxiliar Administrativo"},
+    {id: "1005", nombre: "Administrativo"},
+    {id: "5003", nombre: "FEA Alergología"},
+    {id: "5001", nombre: "FEA Análisis Clínicos"},
+    {id: "5043", nombre: "FEA Obstetricia y Ginecología"},
+    {id: "1002", nombre: "Fisioterapeuta"},
+    {id: "1021", nombre: "Técnico Superior Laboratorio"},
+    {id: "1044", nombre: "Cocinero/a"},
+    {id: "1040", nombre: "Trabajador/a Social"}
+    // Se pueden añadir más IDs aquí siguiendo el mismo patrón
+];
 
-    if(!apellidos) return alert("Introduce los apellidos");
+async function escanearTodo() {
+    const ape = document.getElementById('apellidos').value.trim().toLowerCase();
+    const resultsDiv = document.getElementById('results');
+    const statusDiv = document.getElementById('status');
+    const bar = document.getElementById('bar');
+    const msg = document.getElementById('status-msg');
 
-    resultsArea.innerHTML = "";
-    prog.style.display = "block";
+    if(!ape) return alert("Introduce los apellidos");
+
+    resultsDiv.innerHTML = "";
+    statusDiv.style.display = "block";
     let encontrados = [];
-    const pagsTotal = 80;
+    let totalCargos = categorias.length;
+    let procesados = 0;
 
-    async function fetchPagina(num, situacion) {
+    async function buscar(cat, turno) {
         try {
-            // Genera la URL dinámica basada en el ID de categoría y tipo de bolsa
-            const baseUrl = `https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?id_catesp=${catId}&situacion=${situacion}&provisional=0&convocatoria=2023&pageno=${num}`;
+            // URL dinámica para cada categoría y cada turno (L = Libre, P = Promoción Interna)
+            const url = `https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?id_catesp=${cat.id}&c_area_esp=000&situacion=A&provisional=0&t=${turno}&convocatoria=2023&pageno=1`;
             const proxy = "https://corsproxy.io/?";
             
-            const res = await fetch(proxy + encodeURIComponent(baseUrl));
+            const res = await fetch(proxy + encodeURIComponent(url));
             const html = await res.text();
             const doc = new DOMParser().parseFromString(html, "text/html");
 
             doc.querySelectorAll("table tr").forEach(row => {
                 const c = row.querySelectorAll("td");
                 if(c.length > 6) {
-                    const nombre = c[1].innerText.trim();
-                    if(nombre.toLowerCase().includes(apellidos)) {
+                    const nombreComp = c[1].innerText.trim();
+                    if(nombreComp.toLowerCase().includes(ape)) {
                         encontrados.push({
-                            nombre: nombre,
+                            cat: cat.nombre,
+                            nombre: nombreComp,
                             dni: c[0].innerText.trim(),
                             nota: c[6].innerText.trim(),
-                            tipo: situacion === 'A' ? 'Bolsa Principal' : 'Bolsa Adicional'
+                            turno: turno === 'L' ? 'Libre' : 'Promoción Interna'
                         });
                     }
                 }
@@ -114,39 +122,43 @@ async function realizarBusqueda() {
         } catch(e) {}
     }
 
-    // Busqueda concurrente en bloques de 15 para máxima velocidad
-    for(let i=1; i <= pagsTotal; i += 15) {
-        let lotes = [];
-        for(let j=i; j < i+15; j++) {
-            lotes.push(fetchPagina(j, 'A')); // Busca en principal
-            lotes.push(fetchPagina(j, 'X')); // Busca en adicional
-        }
-        await Promise.all(lotes);
-        let porc = Math.floor((i/pagsTotal)*100);
-        fill.style.width = porc + "%";
-        document.getElementById('p-text').innerText = `Analizando página ${i} de ${pagsTotal}...`;
+    // Ejecución masiva por bloques de categorías
+    for (let i = 0; i < categorias.length; i++) {
+        procesados++;
+        msg.innerText = `Buscando en: ${categorias[i].nombre}...`;
+        bar.style.width = (procesados / totalCargos) * 100 + "%";
+        
+        // Busca en ambos turnos simultáneamente
+        await Promise.all([
+            buscar(categorias[i], 'L'),
+            buscar(categorias[i], 'P')
+        ]);
     }
 
-    prog.style.display = "none";
+    statusDiv.style.display = "none";
 
     if(encontrados.length === 0) {
-        resultsArea.innerHTML = "<p style='text-align:center; padding:20px;'>No se encontraron registros en los listados actuales.</p>";
+        resultsDiv.innerHTML = "<p style='text-align:center; padding:40px; color:#64748b;'>No se ha encontrado a nadie con esos apellidos en ninguna categoría activa.</p>";
         return;
     }
 
-    resultsArea.innerHTML = encontrados.map(r => `
-        <div class="result-card ${r.tipo === 'Bolsa Principal' ? 'principal' : 'adicional'}">
-            <span class="badge ${r.tipo === 'Bolsa Principal' ? 'badge-p' : 'badge-a'}">${r.tipo}</span>
-            <div class="name">${r.nombre}</div>
-            <div style="font-size: 13px; color: #888;">DNI: ${r.dni}</div>
-            <div class="nota-box">
-                <span class="nota-num">${r.nota}</span>
-                <span style="font-size: 12px; color: #999; font-weight: bold;">PUNTOS</span>
+    resultsDiv.innerHTML = encontrados.map(r => `
+        <div class="result-item">
+            <div class="cat-info">
+                <div class="cat-name">${r.cat}</div>
+                <div class="user-name">${r.nombre}</div>
+                <div class="details">
+                    <span class="tag ${r.turno === 'Libre' ? 'tag-l' : 'tag-p'}">${r.turno}</span>
+                    DNI: ${r.dni}
+                </div>
+            </div>
+            <div class="score-box">
+                <span class="score-val">${r.nota}</span>
+                <span class="score-label">Puntos</span>
             </div>
         </div>
     `).join("");
 }
 </script>
-
 </body>
 </html>

@@ -3,48 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador Inteligente SAS - Todas las Categorías</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Buscador Global SAS 2023/24</title>
     <style>
-        :root { --primary: #27ae60; --secondary: #2980b9; --bg: #f1f5f9; --text: #1e293b; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 10px; }
-        p.subtitle { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 30px; }
-        
+        :root { --sas-primary: #007d43; --sas-secondary: #004d2a; --bg: #f0f4f8; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .main-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid var(--sas-primary); padding-bottom: 15px; }
         .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; }
-        select, input { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 15px; transition: all 0.2s; box-sizing: border-box; }
-        select:focus, input:focus { outline: none; border-color: var(--primary); ring: 3px rgba(39, 174, 96, 0.1); }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 16px; background: var(--sas-primary); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        button:hover { background: var(--sas-secondary); transform: scale(1.01); }
         
-        button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #219150; transform: translateY(-1px); }
+        #progress { margin: 20px 0; display: none; text-align: center; }
+        .bar-bg { background: #e9ecef; border-radius: 10px; height: 12px; overflow: hidden; }
+        .bar-fill { background: var(--sas-primary); width: 0%; height: 100%; transition: width 0.3s; }
         
-        #status { margin-top: 20px; text-align: center; font-size: 13px; color: #64748b; display: none; }
-        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 10px; }
-        #fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
-
-        .result-card { border: 1px solid #e2e8f0; padding: 20px; margin-top: 20px; border-radius: 16px; position: relative; transition: 0.3s; }
-        .result-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .badge { position: absolute; top: 20px; right: 20px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-        .badge-normal { background: #dcfce7; color: #166534; }
-        .badge-extra { background: #dbeafe; color: #1e40af; }
-        
-        .name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .dni { color: #94a3b8; font-size: 13px; margin-bottom: 15px; }
-        .nota-val { font-size: 28px; font-weight: 800; color: var(--text); }
-        .nota-label { font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        .result-card { border: 1px solid #dee2e6; padding: 20px; margin-top: 15px; border-radius: 15px; background: #fff; border-left: 10px solid #ddd; }
+        .result-card.principal { border-left-color: #28a745; }
+        .result-card.adicional { border-left-color: #17a2b8; }
+        .badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+        .badge-p { background: #d4edda; color: #155724; }
+        .badge-a { background: #d1ecf1; color: #0c5460; }
+        .name { font-size: 18px; font-weight: bold; }
+        .nota-box { display: flex; align-items: baseline; gap: 10px; margin-top: 10px; }
+        .nota-num { font-size: 32px; font-weight: 800; color: #2c3e50; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Buscador Oficial SAS</h1>
-    <p class="subtitle">Acceso directo a listados de Bolsa 2023/2024</p>
+<div class="main-container">
+    <div class="header">
+        <h1>Buscador de Listados SAS</h1>
+        <small>Actualización según Cuadro de Evolución 2023</small>
+    </div>
 
     <div class="form-group">
         <label>Categoría Profesional</label>
-        <select id="catSelect">
+        <select id="categoria">
             <option value="1004">Celador Conductor</option>
             <option value="1003">Celador</option>
             <option value="1001">Enfermero/a</option>
@@ -54,65 +50,63 @@
             <option value="1002">Fisioterapeuta</option>
             <option value="1021">Técnico Superior Laboratorio</option>
             <option value="1022">Técnico Superior Radiodiagnóstico</option>
-            <option value="1016">Técnico de Salud</option>
             <option value="1044">Cocinero/a</option>
-            <option value="1053">Lavandero/a</option>
             <option value="1055">Limpiador/a</option>
             <option value="1040">Trabajador/a Social</option>
+            <option value="1020">Técnico Superior Anatomía Patológica</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label>Apellidos del Candidato</label>
-        <input type="text" id="apellidos" placeholder="Ej: Perez Garcia">
+        <label>Apellidos del Aspirante</label>
+        <input type="text" id="apellidos" placeholder="Escribe los apellidos a buscar...">
     </div>
 
-    <button onclick="ejecutarBusqueda()">Escanear Listados</button>
+    <button onclick="realizarBusqueda()">Escanear Registros Oficiales</button>
 
-    <div id="status">
-        <span id="text-status">Conectando con la base de datos...</span>
-        <div class="progress-bar"><div id="fill"></div></div>
+    <div id="progress">
+        <div class="bar-bg"><div class="bar-fill" id="fill"></div></div>
+        <p id="p-text" style="font-size: 12px; margin-top: 8px; color: #666;">Preparando conexión...</p>
     </div>
 
     <div id="results"></div>
 </div>
 
 <script>
-async function ejecutarBusqueda() {
-    const catId = document.getElementById('catSelect').value;
+async function realizarBusqueda() {
+    const catId = document.getElementById('categoria').value;
     const apellidos = document.getElementById('apellidos').value.trim().toLowerCase();
-    const resultsDiv = document.getElementById('results');
-    const statusDiv = document.getElementById('status');
+    const resultsArea = document.getElementById('results');
     const fill = document.getElementById('fill');
+    const prog = document.getElementById('progress');
 
-    if(!apellidos) return alert("Por favor, introduce los apellidos");
+    if(!apellidos) return alert("Introduce los apellidos");
 
-    resultsDiv.innerHTML = "";
-    statusDiv.style.display = "block";
-    
+    resultsArea.innerHTML = "";
+    prog.style.display = "block";
     let encontrados = [];
-    const totalPags = 80; // Escaneo profundo
+    const pagsTotal = 80;
 
-    async function buscarEnWeb(pag, situacion) {
+    async function fetchPagina(num, situacion) {
         try {
-            // URL oficial dinámica basada en la categoría seleccionada
-            const url = `https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?id_catesp=${catId}&situacion=${situacion}&provisional=0&convocatoria=2023&pageno=${pag}`;
+            // Genera la URL dinámica basada en el ID de categoría y tipo de bolsa
+            const baseUrl = `https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?id_catesp=${catId}&situacion=${situacion}&provisional=0&convocatoria=2023&pageno=${num}`;
             const proxy = "https://corsproxy.io/?";
             
-            const res = await fetch(proxy + encodeURIComponent(url));
+            const res = await fetch(proxy + encodeURIComponent(baseUrl));
             const html = await res.text();
             const doc = new DOMParser().parseFromString(html, "text/html");
 
             doc.querySelectorAll("table tr").forEach(row => {
                 const c = row.querySelectorAll("td");
                 if(c.length > 6) {
-                    const nombreComp = c[1].innerText.trim();
-                    if(nombreComp.toLowerCase().includes(apellidos)) {
+                    const nombre = c[1].innerText.trim();
+                    if(nombre.toLowerCase().includes(apellidos)) {
                         encontrados.push({
-                            nombre: nombreComp,
+                            nombre: nombre,
                             dni: c[0].innerText.trim(),
                             nota: c[6].innerText.trim(),
-                            esAdicional: situacion === 'X'
+                            tipo: situacion === 'A' ? 'Bolsa Principal' : 'Bolsa Adicional'
                         });
                     }
                 }
@@ -120,35 +114,34 @@ async function ejecutarBusqueda() {
         } catch(e) {}
     }
 
-    // Ejecución optimizada por bloques
-    for(let i=1; i <= totalPags; i += 10) {
-        let promesas = [];
-        for(let j=i; j < i+10; j++) {
-            promesas.push(buscarEnWeb(j, 'A')); // Bolsa Normal
-            promesas.push(buscarEnWeb(j, 'X')); // Bolsa Adicional
+    // Busqueda concurrente en bloques de 15 para máxima velocidad
+    for(let i=1; i <= pagsTotal; i += 15) {
+        let lotes = [];
+        for(let j=i; j < i+15; j++) {
+            lotes.push(fetchPagina(j, 'A')); // Busca en principal
+            lotes.push(fetchPagina(j, 'X')); // Busca en adicional
         }
-        await Promise.all(promesas);
-        fill.style.width = (i/totalPags)*100 + "%";
-        document.getElementById('text-status').innerText = `Analizando listados... ${Math.floor((i/totalPags)*100)}%`;
+        await Promise.all(lotes);
+        let porc = Math.floor((i/pagsTotal)*100);
+        fill.style.width = porc + "%";
+        document.getElementById('p-text').innerText = `Analizando página ${i} de ${pagsTotal}...`;
     }
 
-    statusDiv.style.display = "none";
+    prog.style.display = "none";
 
     if(encontrados.length === 0) {
-        resultsDiv.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>No se han encontrado resultados para esa categoría y apellidos.</p>";
+        resultsArea.innerHTML = "<p style='text-align:center; padding:20px;'>No se encontraron registros en los listados actuales.</p>";
         return;
     }
 
-    resultsDiv.innerHTML = encontrados.map(r => `
-        <div class="result-card">
-            <span class="badge ${r.esAdicional ? 'badge-extra' : 'badge-normal'}">
-                ${r.esAdicional ? 'BOLSA ADICIONAL' : 'BOLSA PRINCIPAL'}
-            </span>
+    resultsArea.innerHTML = encontrados.map(r => `
+        <div class="result-card ${r.tipo === 'Bolsa Principal' ? 'principal' : 'adicional'}">
+            <span class="badge ${r.tipo === 'Bolsa Principal' ? 'badge-p' : 'badge-a'}">${r.tipo}</span>
             <div class="name">${r.nombre}</div>
-            <div class="dni">DNI: ${r.dni}</div>
-            <div style="display:flex; align-items: baseline; gap:10px;">
-                <div class="nota-val">${r.nota}</div>
-                <div class="nota-label">Puntos Totales</div>
+            <div style="font-size: 13px; color: #888;">DNI: ${r.dni}</div>
+            <div class="nota-box">
+                <span class="nota-num">${r.nota}</span>
+                <span style="font-size: 12px; color: #999; font-weight: bold;">PUNTOS</span>
             </div>
         </div>
     `).join("");

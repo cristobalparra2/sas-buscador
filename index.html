@@ -3,158 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador Universal SAS - Detector de Categorías</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Buscador Maestro SAS 2023</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00a859; --accent: #2980b9; --bg: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
-        .container { max-width: 850px; margin: 0 auto; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: var(--primary); font-weight: 800; margin-bottom: 10px; }
-        p.desc { text-align: center; color: #64748b; margin-bottom: 30px; }
+        :root { --sas-green: #00a859; --sas-blue: #007bff; --sas-red: #dc3545; --bg: #f4f7f6; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--sas-green); font-weight: 900; margin-bottom: 5px; }
+        .search-box { background: #e9ecef; padding: 20px; border-radius: 15px; margin-bottom: 25px; }
+        input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; box-sizing: border-box; }
+        button { width: 100%; padding: 18px; background: var(--sas-green); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; }
         
-        .search-area { background: #f1f5f9; padding: 25px; border-radius: 16px; margin-bottom: 30px; }
-        input { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 18px; box-sizing: border-box; transition: 0.3s; }
-        input:focus { outline: none; border-color: var(--primary); background: white; }
+        #status { margin: 20px 0; display: none; text-align: center; }
+        .bar-bg { background: #ddd; height: 10px; border-radius: 5px; overflow: hidden; }
+        #bar-fill { background: var(--sas-green); width: 0%; height: 100%; transition: width 0.2s; }
         
-        button { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: 0.2s; }
-        button:hover { background: #008f4c; transform: translateY(-2px); }
+        .result-card { border: 1px solid #eee; padding: 20px; margin-top: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; border-left: 8px solid #ccc; }
+        .card-libre { border-left-color: var(--sas-green); }
+        .card-promo { border-left-color: #f39c12; }
+        .card-disc { border-left-color: #9b59b6; }
+        .card-extra { border-left-color: var(--sas-blue); border-left-style: dashed; }
 
-        #status { margin: 20px 0; display: none; }
-        .progress-container { background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; }
-        #bar { height: 100%; width: 0%; background: var(--primary); transition: width 0.3s; }
-        #status-msg { text-align: center; font-size: 12px; color: #64748b; margin-top: 8px; font-weight: 600; }
-
-        .result-item { border: 1px solid #e2e8f0; padding: 20px; margin-top: 15px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .cat-info { flex: 1; }
-        .cat-name { font-weight: 800; font-size: 16px; color: var(--accent); text-transform: uppercase; }
-        .user-name { font-size: 18px; font-weight: 600; margin: 4px 0; }
-        .details { font-size: 13px; color: #64748b; }
-        
-        .score-box { text-align: center; padding-left: 20px; border-left: 2px solid #f1f5f9; }
-        .score-val { font-size: 32px; font-weight: 800; color: #1e293b; display: block; }
-        .score-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
-
-        .tag { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 5px; }
-        .tag-l { background: #dcfce7; color: #166534; } /* Libre */
-        .tag-p { background: #fef9c3; color: #854d0e; } /* Promoción */
+        .cat-tag { font-size: 11px; font-weight: 900; text-transform: uppercase; color: #666; }
+        .candidate-name { font-size: 18px; font-weight: 700; margin: 5px 0; }
+        .nota-box { text-align: right; }
+        .nota-val { font-size: 30px; font-weight: 900; color: #2c3e50; }
+        .badge { padding: 4px 8px; border-radius: 5px; font-size: 10px; font-weight: bold; margin-right: 5px; color: white; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Detector de Categorías SAS</h1>
-    <p class="desc">Introduce apellidos para localizar al aspirante en todos los listados vigentes.</p>
+    <h1>SISTEMA DE LOCALIZACIÓN SAS</h1>
+    <p style="text-align:center; color:#666;">Escaneo global de todas las categorías y turnos</p>
 
-    <div class="search-area">
-        <input type="text" id="apellidos" placeholder="Escriba los apellidos completos (Obligatorio)">
-        <button onclick="escanearTodo()">Buscar en todas las categorías</button>
+    <div class="search-box">
+        <input type="text" id="apellidos" placeholder="Introduce APELLIDOS del candidato...">
+        <button onclick="escanear()">INICIAR BÚSQUEDA GLOBAL</button>
     </div>
 
     <div id="status">
-        <div class="progress-container"><div id="bar"></div></div>
-        <div id="status-msg">Iniciando escaneo global...</div>
+        <div class="bar-bg"><div id="bar-fill"></div></div>
+        <p id="status-txt" style="font-size:12px; margin-top:5px;">Iniciando...</p>
     </div>
 
     <div id="results"></div>
 </div>
 
 <script>
-// Base de datos de categorías basada en el Cuadro de Evolución y IDs oficiales
-const categorias = [
-    {id: "1004", nombre: "Celador Conductor"},
-    {id: "1003", nombre: "Celador"},
-    {id: "1001", nombre: "Enfermero/a"},
-    {id: "1011", nombre: "TCAE (Aux. Enfermería)"},
-    {id: "1013", nombre: "Auxiliar Administrativo"},
-    {id: "1005", nombre: "Administrativo"},
-    {id: "5003", nombre: "FEA Alergología"},
-    {id: "5001", nombre: "FEA Análisis Clínicos"},
-    {id: "5043", nombre: "FEA Obstetricia y Ginecología"},
-    {id: "1002", nombre: "Fisioterapeuta"},
-    {id: "1021", nombre: "Técnico Superior Laboratorio"},
-    {id: "1044", nombre: "Cocinero/a"},
-    {id: "1040", nombre: "Trabajador/a Social"}
-    // Se pueden añadir más IDs aquí siguiendo el mismo patrón
+// Base de datos extendida con IDs clave (se pueden seguir añadiendo según el enlace oficial)
+const dbCategorias = [
+    {id: "1004", n: "Celador Conductor"}, {id: "1003", n: "Celador"},
+    {id: "1001", n: "Enfermero/a"}, {id: "1011", n: "TCAE"},
+    {id: "1013", n: "Aux. Administrativo"}, {id: "1005", n: "Administrativo"},
+    {id: "5003", n: "FEA Alergología"}, {id: "5043", n: "FEA Obstetricia y Ginecología"},
+    {id: "1044", n: "Cocinero/a"}, {id: "1040", n: "Trabajador/a Social"},
+    {id: "1002", n: "Fisioterapeuta"}, {id: "1055", n: "Limpiador/a"}
+    // Nota: El sistema funciona añadiendo los IDs numéricos que aparecen en tus enlaces.
 ];
 
-async function escanearTodo() {
+async function escanear() {
     const ape = document.getElementById('apellidos').value.trim().toLowerCase();
-    const resultsDiv = document.getElementById('results');
-    const statusDiv = document.getElementById('status');
-    const bar = document.getElementById('bar');
-    const msg = document.getElementById('status-msg');
+    const resDiv = document.getElementById('results');
+    const fill = document.getElementById('bar-fill');
+    const status = document.getElementById('status');
+    
+    if(!ape) return alert("Apellidos obligatorios");
 
-    if(!ape) return alert("Introduce los apellidos");
-
-    resultsDiv.innerHTML = "";
-    statusDiv.style.display = "block";
+    resDiv.innerHTML = "";
+    status.style.display = "block";
     let encontrados = [];
-    let totalCargos = categorias.length;
-    let procesados = 0;
 
-    async function buscar(cat, turno) {
+    const fetchData = async (cat, turno, situacion) => {
         try {
-            // URL dinámica para cada categoría y cada turno (L = Libre, P = Promoción Interna)
-            const url = `https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?id_catesp=${cat.id}&c_area_esp=000&situacion=A&provisional=0&t=${turno}&convocatoria=2023&pageno=1`;
+            // Construcción de URL según tus especificaciones (Situación A=Normal, X=Adicional | T=Turno)
+            const url = `https://ws027.sspa.juntadeandalucia.es/profesionales/personaltemporal/bdf_listado_inscripcion.asp?id_catesp=${cat.id}&situacion=${situacion}&provisional=0&t=${turno}&convocatoria=2023&pageno=1`;
             const proxy = "https://corsproxy.io/?";
-            
-            const res = await fetch(proxy + encodeURIComponent(url));
-            const html = await res.text();
+            const response = await fetch(proxy + encodeURIComponent(url));
+            const html = await response.text();
             const doc = new DOMParser().parseFromString(html, "text/html");
 
             doc.querySelectorAll("table tr").forEach(row => {
                 const c = row.querySelectorAll("td");
                 if(c.length > 6) {
-                    const nombreComp = c[1].innerText.trim();
-                    if(nombreComp.toLowerCase().includes(ape)) {
+                    const nombre = c[1].innerText.trim();
+                    if(nombre.toLowerCase().includes(ape)) {
                         encontrados.push({
-                            cat: cat.nombre,
-                            nombre: nombreComp,
-                            dni: c[0].innerText.trim(),
+                            cat: cat.n, nombre, dni: c[0].innerText.trim(),
                             nota: c[6].innerText.trim(),
-                            turno: turno === 'L' ? 'Libre' : 'Promoción Interna'
+                            turno: turno === 'L' ? 'Libre' : (turno === 'P' ? 'Promo. Interna' : 'Discapacidad'),
+                            tipo: situacion === 'A' ? 'Principal' : 'Adicional'
                         });
                     }
                 }
             });
         } catch(e) {}
-    }
+    };
 
-    // Ejecución masiva por bloques de categorías
-    for (let i = 0; i < categorias.length; i++) {
-        procesados++;
-        msg.innerText = `Buscando en: ${categorias[i].nombre}...`;
-        bar.style.width = (procesados / totalCargos) * 100 + "%";
-        
-        // Busca en ambos turnos simultáneamente
+    // Escaneo masivo: Recorremos categorías y dentro de cada una, los 3 turnos y 2 tipos de bolsa
+    for(let i=0; i < dbCategorias.length; i++) {
+        const cat = dbCategorias[i];
+        document.getElementById('status-txt').innerText = `Escaneando: ${cat.n}...`;
+        fill.style.width = ((i+1)/dbCategorias.length)*100 + "%";
+
+        // Lanzamos búsquedas en paralelo para no tardar una eternidad
         await Promise.all([
-            buscar(categorias[i], 'L'),
-            buscar(categorias[i], 'P')
+            fetchData(cat, 'L', 'A'), fetchData(cat, 'P', 'A'), fetchData(cat, 'D', 'A'), // Normales
+            fetchData(cat, 'L', 'X'), fetchData(cat, 'P', 'X'), fetchData(cat, 'D', 'X')  // Adicionales
         ]);
     }
 
-    statusDiv.style.display = "none";
-
+    status.style.display = "none";
     if(encontrados.length === 0) {
-        resultsDiv.innerHTML = "<p style='text-align:center; padding:40px; color:#64748b;'>No se ha encontrado a nadie con esos apellidos en ninguna categoría activa.</p>";
+        resDiv.innerHTML = "<p style='text-align:center;'>No se han encontrado registros.</p>";
         return;
     }
 
-    resultsDiv.innerHTML = encontrados.map(r => `
-        <div class="result-item">
-            <div class="cat-info">
-                <div class="cat-name">${r.cat}</div>
-                <div class="user-name">${r.nombre}</div>
-                <div class="details">
-                    <span class="tag ${r.turno === 'Libre' ? 'tag-l' : 'tag-p'}">${r.turno}</span>
-                    DNI: ${r.dni}
+    resDiv.innerHTML = encontrados.map(r => `
+        <div class="result-card ${r.tipo === 'Adicional' ? 'card-extra' : (r.turno === 'Libre' ? 'card-libre' : (r.turno === 'Discapacidad' ? 'card-disc' : 'card-promo'))}">
+            <div>
+                <div class="cat-tag">${r.cat}</div>
+                <div class="candidate-name">${r.nombre}</div>
+                <div style="font-size:12px; color:#888;">DNI: ${r.dni}</div>
+                <div style="margin-top:8px;">
+                    <span class="badge" style="background:#444">${r.turno}</span>
+                    <span class="badge" style="background:${r.tipo==='Principal'?'#28a745':'#007bff'}">${r.tipo}</span>
                 </div>
             </div>
-            <div class="score-box">
-                <span class="score-val">${r.nota}</span>
-                <span class="score-label">Puntos</span>
+            <div class="nota-box">
+                <div class="nota-val">${r.nota}</div>
+                <div style="font-size:10px; font-weight:bold; color:#999;">PUNTOS</div>
             </div>
         </div>
     `).join("");
